@@ -1,0 +1,5 @@
+.idea
+.env
+upload/*.xlsx
+upload/*.xls
+upload/*.csv
