@@ -84,7 +84,7 @@ func main() {
 
 		if update.Message.Text == "Download" {
 
-			fileName, err := db.getUserCoins()
+			fileName, err := db.getUserCoins(dir)
 			if err != nil {
 				log.Fatalf("Ошибка выполнения запроса: %v", err)
 			}
@@ -103,7 +103,7 @@ func main() {
 	fmt.Println("Bot ready!")
 }
 
-func (db *Storage) getUserCoins() (string, error) {
+func (db *Storage) getUserCoins(path string) (string, error) {
 	// SQL запрос к базе данных
 	query := "select `users`.`name`, `users`.`last_name`, `users`.`parent_name`, `users`.`username`, `users`.`email`, `users`.`coins`, CONCAT(groups.title) as group_title, `teacher`.`name` as `teacher_name` from `users` left join `group_user` on `group_user`.`user_id` = `users`.`id` left join `groups` on `groups`.`id` = `group_user`.`group_id` left join `admins` as `teacher` on `teacher`.`id` = `groups`.`teacher_id` where `users`.`school_id` = 1231 group by `users`.`id`"
 	rows, err := db.Conn.Query(query)
@@ -207,7 +207,7 @@ func (db *Storage) getUserCoins() (string, error) {
 		return "", err
 	}
 
-	fileName := "upload/user_coin_list.xlsx"
+	fileName := filepath.Join(path, "upload/user_coin_list.xlsx")
 
 	// Сохранение файла Excel
 	err = file.Save(fileName)
