@@ -105,7 +105,7 @@ func main() {
 
 func (db *Storage) getUserCoins(path string) (string, error) {
 	// SQL запрос к базе данных
-	query := "select `users`.`name`, `users`.`last_name`, `users`.`parent_name`, `users`.`username`, `users`.`email`, `users`.`coins`, CONCAT(groups.title) as group_title, `teacher`.`name` as `teacher_name` from `users` left join `group_user` on `group_user`.`user_id` = `users`.`id` left join `groups` on `groups`.`id` = `group_user`.`group_id` left join `admins` as `teacher` on `teacher`.`id` = `groups`.`teacher_id` where `users`.`school_id` = 1231 group by `users`.`id`"
+	query := "SELECT\n\t`users`.`name`,\n\t`users`.`last_name`,\n\t`users`.`parent_name`,\n\t`users`.`username`,\n\t`users`.`email`,\n\t`users`.`coins`,\n\tCONCAT( groups.title ) AS group_title,\n\t`teacher`.`name` AS `teacher_name`,\n\tCOUNT( `journals`.id ) AS `count_lessons` \nFROM\n\t`users`\n\tLEFT JOIN `group_user` ON `group_user`.`user_id` = `users`.`id`\n\tLEFT JOIN `groups` ON `groups`.`id` = `group_user`.`group_id`\n\tLEFT JOIN `admins` AS `teacher` ON `teacher`.`id` = `groups`.`teacher_id`\n\tLEFT JOIN `journals` ON `journals`.user_id = `users`.`id` \nWHERE\n\t`users`.`school_id` = 1231 AND `journals`.marked IS NOT NULL\nGROUP BY\n\t`users`.`id`"
 	rows, err := db.Conn.Query(query)
 	if err != nil {
 		log.Fatal(err)
